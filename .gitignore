@@ -16,5 +16,20 @@ config/test/contracts.json
 build
 dist
 
-# IntelliJ
+# Editor directories and files
 *.iml
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+.DS_Store
+node_modules/
+/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/test/unit/coverage/
+

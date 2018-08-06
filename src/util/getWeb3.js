@@ -1,69 +1,33 @@
 import Web3 from 'web3'
 
-/*
-* 1. Check for injected web3 (mist/metamask)
-* 2. If metamask/mist create a new web3 instance and pass on result
-* 3. Get networkId - Now we can check the user is connected to the right network to use our dApp
-* 4. Get user account from metamask
-* 5. Get user balance
-*/
+function initWeb3 () {
+    const globalWeb3 = window.web3
 
-let getWeb3 = new Promise(function (resolve, reject) {
-  // Check for injected web3 (mist/metamask)
-  var web3js = window.web3
-  if (typeof web3js !== 'undefined') {
-    var web3 = new Web3(web3js.currentProvider)
-    resolve({
-      injectedWeb3: web3.isConnected(),
-      web3 () {
-        return web3
-      }
-    })
-  } else {
-    // web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545')) GANACHE FALLBACK
-    reject(new Error('Unable to connect to Metamask'))
-  }
-})
-  .then(result => {
-    return new Promise(function (resolve, reject) {
-      // Retrieve network ID
-      result.web3().version.getNetwork((err, networkId) => {
-        if (err) {
-          // If we can't find a networkId keep result the same and reject the promise
-          reject(new Error('Unable to retrieve network ID'))
-        } else {
-          // Assign the networkId property to our result and resolve promise
-          result = Object.assign({}, result, {networkId})
-          resolve(result)
-        }
-      })
-    })
-  })
-  .then(result => {
-    return new Promise(function (resolve, reject) {
-      // Retrieve coinbase
-      result.web3().eth.getCoinbase((err, coinbase) => {
-        if (err) {
-          reject(new Error('Unable to retrieve coinbase'))
-        } else {
-          result = Object.assign({}, result, { coinbase })
-          resolve(result)
-        }
-      })
-    })
-  })
-  .then(result => {
-    return new Promise(function (resolve, reject) {
-      // Retrieve balance for coinbase
-      result.web3().eth.getBalance(result.coinbase, (err, balance) => {
-        if (err) {
-          reject(new Error('Unable to retrieve balance for address: ' + result.coinbase))
-        } else {
-          result = Object.assign({}, result, { balance })
-          resolve(result)
-        }
-      })
-    })
-  })
+    let globalWeb3Provider = null
 
-export default getWeb3
+    // Is there an injected web3 instance?
+    if (typeof globalWeb3 !== 'undefined') {
+        globalWeb3Provider = globalWeb3.currentProvider
+    } else {
+        // If no injected web3 instance is detected, fall back to Ganache
+        globalWeb3Provider = new Web3.providers.HttpProvider('http://localhost:7545')
+    }
+
+    const web3 = new Web3(globalWeb3Provider)
+
+    web3.eth.getAccountsPromise = function () {
+        return new Promise(function (resolve, reject) {
+            web3.eth.getAccounts(function (e, accounts) {
+                if (e != null) {
+                    reject(e)
+                } else {
+                    resolve(accounts)
+                }
+            })
+        })
+    }
+
+    return {web3: web3, web3Provider: globalWeb3Provider}
+}
+
+export default initWeb3

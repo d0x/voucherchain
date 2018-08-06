@@ -1,20 +1,23 @@
 <template>
-  <hellometamask/>
+    <div>
+        <storedValue/>
+    </div>
 </template>
 
 <script>
-import HelloMetamask from '@/components/HelloMetamask'
+    import StoredValue from '@/components/StoredValue'
 
-export default {
-  name: 'd-app',
-  components: {
-    'hellometamask': HelloMetamask
-  },
-  beforeCreate () {
-    console.log('registerWeb3 Action dispatched from casino-dapp.vue')
-    this.$store.dispatch('registerWeb3')
-  }
-}
+    export default {
+        name: 'd-app',
+        components: {
+            'storedValue': StoredValue
+        },
+        async beforeCreate () {
+            console.log('Init components')
+            await this.$store.dispatch('initWeb3')
+            await this.$store.dispatch('fetchStoredValue')
+        }
+    }
 </script>
 
 <style scoped>

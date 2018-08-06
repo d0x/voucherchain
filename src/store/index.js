@@ -1,56 +1,70 @@
+/* eslint-disable indent */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import state from './state'
 import getWeb3 from '../util/getWeb3'
-import pollWeb3 from '../util/pollWeb3'
-import getContract from '../util/getContract'
+// import pollWeb3 from '../util/pollWeb3'
+// import RestaurantsContract from '../build/contracts/Restaurants.json'
+import SimpleStorageArtifact from '../../build/contracts/SimpleStorage.json'
 
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  strict: true,
-  state,
-  mutations: {
-    registerWeb3Instance (state, payload) {
-      console.log('registerWeb3instance Mutation being executed', payload)
-      let result = payload
-      let web3Copy = state.web3
-      web3Copy.coinbase = result.coinbase
-      web3Copy.networkId = result.networkId
-      web3Copy.balance = parseInt(result.balance, 10)
-      web3Copy.isInjected = result.injectedWeb3
-      web3Copy.web3Instance = result.web3
-      state.web3 = web3Copy
-      pollWeb3()
+    strict: true,
+    state,
+    getters: {
+        storeValue (state) {
+            return state.storeValue
+        }
     },
-    pollWeb3Instance (state, payload) {
-      console.log('pollWeb3Instance mutation being executed', payload)
-      state.web3.coinbase = payload.coinbase
-      state.web3.balance = parseInt(payload.balance, 10)
+    mutations: {
+        setWeb3 (state, result) {
+            console.log('Set Web3 instance')
+            // state.web3 = () => result.web3
+            state.web3 = () => result.web3
+            state.web3Provider = () => result.web3Provider
+            state.simpleStorageInstance = () => result.simpleStorageInstance
+            state.account = () => result.account
+        },
+        setSimpleStorageContract (state, result) {
+            console.log('Set SimpleStorageContract')
+            state.simpleStorageContract = result
+        },
+        setStoredValue (state, value) {
+            console.log('set store value to ', value)
+            state.storeValue = value
+        }
     },
-    registerContractInstance (state, payload) {
-      console.log('Restaurants contract instance: ', payload)
-      state.contractInstance = () => payload
+    actions: {
+        async initWeb3 ({commit}) {
+            console.log('Init Web3')
+
+            const stuff = await getWeb3()
+
+            const web3 = stuff.web3
+            const web3Provider = stuff.web3Provider
+
+            const account = (await web3.eth.getAccountsPromise())[0]
+
+            const TruffleContract = require('truffle-contract')
+            const SimpleStorage = TruffleContract(SimpleStorageArtifact)
+            SimpleStorage.setProvider(web3Provider)
+
+            let simpleStorageInstance = await SimpleStorage.deployed()
+
+            commit('setWeb3', {
+                web3, web3Provider, account, simpleStorageInstance
+            })
+        },
+        async fetchStoredValue ({commit, state}) {
+            console.log('Update stored value')
+
+            commit('setStoredValue', JSON.stringify(await state.simpleStorageInstance().get.call()))
+        },
+        async updateStoreValue ({commit, state}, newValue) {
+            console.log('Sending', newValue, 'to the Blockchain')
+
+            await state.simpleStorageInstance().set(newValue, {from: state.account()})
+        }
     }
-  },
-  actions: {
-    registerWeb3 ({commit}) {
-      console.log('registerWeb3 Action being executed')
-      getWeb3.then(result => {
-        console.log('committing result to registerWeb3Instance mutation')
-        commit('registerWeb3Instance', result)
-      }).catch(e => {
-        console.log('error in action registerWeb3', e)
-      })
-    },
-    pollWeb3 ({commit}, payload) {
-      console.log('pollWeb3 action being executed')
-      commit('pollWeb3Instance', payload)
-    },
-    getContractInstance ({commit}) {
-      getContract.then(result => {
-        commit('registerContractInstance', result)
-      }).catch(e => console.log(e))
-    }
-  }
 })

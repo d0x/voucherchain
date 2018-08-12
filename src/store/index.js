@@ -14,20 +14,19 @@ export const store = new Vuex.Store({
     state,
     getters: {
         storeValue (state) {
-            return state.storeValue
+            return JSON.stringify(state.storeValue)
         }
     },
     mutations: {
         setWeb3 (state, result) {
             console.log('Set Web3 instance')
-            // state.web3 = () => result.web3
-            state.web3 = () => result.web3
-            state.web3Provider = () => result.web3Provider
-            state.simpleStorageInstance = () => result.simpleStorageInstance
-            state.account = () => result.account
+            state.web3 = result.web3
+            state.web3Provider = result.web3Provider
+            state.simpleStorageInstance = result.simpleStorageInstance
+            state.account = result.account
         },
         setSimpleStorageContract (state, result) {
-            console.log('Set SimpleStorageContract')
+            console.log('set SimpleStorageContract')
             state.simpleStorageContract = result
         },
         setStoredValue (state, value) {
@@ -39,12 +38,7 @@ export const store = new Vuex.Store({
         async initWeb3 ({commit}) {
             console.log('Init Web3')
 
-            const stuff = await getWeb3()
-
-            const web3 = stuff.web3
-            const web3Provider = stuff.web3Provider
-
-            const account = (await web3.eth.getAccountsPromise())[0]
+            const {web3, web3Provider} = await getWeb3()
 
             const TruffleContract = require('truffle-contract')
             const SimpleStorage = TruffleContract(SimpleStorageArtifact)
@@ -52,19 +46,35 @@ export const store = new Vuex.Store({
 
             let simpleStorageInstance = await SimpleStorage.deployed()
 
+            const account = (await web3.eth.getAccountsPromise())[0]
+
             commit('setWeb3', {
-                web3, web3Provider, account, simpleStorageInstance
+                web3: () => web3,
+                web3Provider: () => web3Provider,
+                simpleStorageInstance: () => simpleStorageInstance,
+                account: account
             })
         },
         async fetchStoredValue ({commit, state}) {
-            console.log('Update stored value')
+            console.log('Reading stored value from blockchain')
 
-            commit('setStoredValue', JSON.stringify(await state.simpleStorageInstance().get.call()))
+            commit('setStoredValue', await state.simpleStorageInstance().get.call())
         },
-        async updateStoreValue ({commit, state}, newValue) {
-            console.log('Sending', newValue, 'to the Blockchain')
+        async updateStoreValue ({commit, state}, x) {
+            console.log('Sending', x, 'to the Blockchain')
 
-            await state.simpleStorageInstance().set(newValue, {from: state.account()})
+            try {
+                const {logs} = await state.simpleStorageInstance().set(x, {from: state.account})
+
+                const {newValue} = logs.find(e => {
+                    return e.event === "LogStoredDataChanged"
+                }).args
+                commit('setStoredValue', newValue)
+
+                console.log('Events', logs)
+            } catch (e) {
+                console.log("Error!")
+            }
         }
     }
 })

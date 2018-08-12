@@ -25,7 +25,6 @@
                 let newStoreValue = this.$data.newStoreValue
 
                 await this.$store.dispatch('updateStoreValue', newStoreValue)
-                await this.$store.dispatch('fetchStoredValue')
             }
         }
     }

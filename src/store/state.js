@@ -1,9 +1,9 @@
 let state = {
     web3: null,
     web3Provider: null,
-    simpleStorageContract: null,
+    simpleStorageInstance: null,
     account: null,
-    storeValue: -1
+    storeValue: null
 }
 
 export default state

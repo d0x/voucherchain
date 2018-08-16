@@ -4,6 +4,7 @@ let state = {
     simpleStorageInstance: null,
     ordersInstance: null,
     account: null,
+    balance: null,
     storeValue: null,
     orderCount: null,
     orders: []

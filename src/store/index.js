@@ -24,6 +24,7 @@ export const store = new Vuex.Store({
             state.web3Provider = result.web3Provider
             state.simpleStorageInstance = result.simpleStorageInstance
             state.ordersInstance = result.ordersInstance
+            state.balance = result.balance
             state.account = result.account
         },
         setSimpleStorageContract (state, result) {
@@ -40,6 +41,10 @@ export const store = new Vuex.Store({
         },
         setOrders (state, value) {
             state.orders = value
+        },
+        setAccount (state, {account, balance}) {
+            state.account = account
+            state.balance = balance
         }
     },
     actions: {
@@ -60,12 +65,21 @@ export const store = new Vuex.Store({
 
             const account = (await web3.eth.getAccountsPromise())[0]
 
+            const balance = await web3.eth.getBalancePromise(account)
+
+            web3Provider.publicConfigStore.on('update', async e => {
+                const account = e.selectedAddress
+                const balance = await web3.eth.getBalancePromise(account)
+                commit('setAccount', {account, balance})
+            });
+
             commit('setWeb3', {
                 web3: () => web3,
                 web3Provider: () => web3Provider,
                 simpleStorageInstance: () => simpleStorageInstance,
                 ordersInstance: () => ordersInstance,
-                account: account
+                account: account,
+                balance: balance
             })
         },
         async fetchStoredValue ({commit, state}) {

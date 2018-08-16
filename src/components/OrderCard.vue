@@ -1,6 +1,9 @@
 <template>
-    <div class="card" style="width: 18rem;">
-        <div class="card-body" :class="{ 'bg-dark': order.completed}">
+    <div class="card" style="width: 18rem;" :class="{ 'bg-dark': order.completed}">
+        <div class="card-header">
+            {{order.owner}}
+        </div>
+        <div class="card-body">
             <h5 class="card-title">{{order.country}}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{order.zip}}</h6>
             <p class="card-text">{{order.text}}</p>

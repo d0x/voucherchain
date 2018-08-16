@@ -1,17 +1,18 @@
 <template>
     <div class="container">
-        <order/>
+        <MetaMask/>
+        <Order/>
     </div>
 </template>
 
 <script>
-    import StoredValue from '@/components/StoredValue'
-    import Order from '@/components/Order'
+    import MetaMask from "./MetaMask";
+    import Order from "./Order";
 
     export default {
         components: {
-            'storedValue': StoredValue,
-            'order': Order
+            Order,
+            MetaMask
         },
         async beforeCreate () {
             console.log('Init components')

@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 
-function initWeb3 () {
+export default function initWeb3 () {
     const globalWeb3 = window.web3
 
     let globalWeb3Provider = null
@@ -17,7 +17,7 @@ function initWeb3 () {
 
     web3.eth.getAccountsPromise = function () {
         return new Promise(function (resolve, reject) {
-            web3.eth.getAccounts(function (e, accounts) {
+            web3.eth.getAccounts((e, accounts) => {
                 if (e != null) {
                     reject(e)
                 } else {
@@ -27,7 +27,17 @@ function initWeb3 () {
         })
     }
 
+    web3.eth.getBalancePromise = function (address) {
+        return new Promise(function (resolve, reject) {
+            web3.eth.getBalance(address, (e, balance) => {
+                if (e != null) {
+                    reject(e)
+                } else {
+                    resolve(web3.fromWei(balance, "ether") + " ETH")
+                }
+            })
+        })
+    }
+
     return {web3: web3, web3Provider: globalWeb3Provider}
 }
-
-export default initWeb3

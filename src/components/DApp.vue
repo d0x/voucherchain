@@ -17,7 +17,6 @@
         async beforeCreate () {
             console.log('Init components')
             await this.$store.dispatch('initWeb3')
-            await this.$store.dispatch('fetchStoredValue')
             await this.$store.dispatch('fetchOrderCount')
         }
     }

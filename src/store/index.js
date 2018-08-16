@@ -13,27 +13,15 @@ export const store = new Vuex.Store({
     strict: true,
     state,
     getters: {
-        storeValue (state) {
-            return JSON.stringify(state.storeValue)
-        }
     },
     mutations: {
         setWeb3 (state, result) {
             console.log('Set Web3 instance')
             state.web3 = result.web3
             state.web3Provider = result.web3Provider
-            state.simpleStorageInstance = result.simpleStorageInstance
             state.ordersInstance = result.ordersInstance
             state.balance = result.balance
             state.account = result.account
-        },
-        setSimpleStorageContract (state, result) {
-            console.log('set SimpleStorageContract')
-            state.simpleStorageContract = result
-        },
-        setStoredValue (state, value) {
-            console.log('set store value to ', value)
-            state.storeValue = value
         },
         setOrderCount (state, value) {
             console.log('set orderCount to ', value)
@@ -54,17 +42,12 @@ export const store = new Vuex.Store({
             const {web3, web3Provider} = await getWeb3()
 
             const TruffleContract = require('truffle-contract')
-            const SimpleStorage = TruffleContract(SimpleStorageArtifact)
-            SimpleStorage.setProvider(web3Provider)
-
-            let simpleStorageInstance = await SimpleStorage.deployed()
 
             const Orders = TruffleContract(OrdersArtifact)
             Orders.setProvider(web3Provider)
             let ordersInstance = await Orders.deployed()
 
             const account = (await web3.eth.getAccountsPromise())[0]
-
             const balance = await web3.eth.getBalancePromise(account)
 
             web3Provider.publicConfigStore.on('update', async e => {
@@ -76,16 +59,10 @@ export const store = new Vuex.Store({
             commit('setWeb3', {
                 web3: () => web3,
                 web3Provider: () => web3Provider,
-                simpleStorageInstance: () => simpleStorageInstance,
                 ordersInstance: () => ordersInstance,
                 account: account,
                 balance: balance
             })
-        },
-        async fetchStoredValue ({commit, state}) {
-            console.log('Reading stored value from blockchain')
-
-            commit('setStoredValue', await state.simpleStorageInstance().get.call())
         },
         async fetchOrderCount ({commit, state}) {
             console.log('Reading orderCount from blockchain')
@@ -112,22 +89,6 @@ export const store = new Vuex.Store({
             )
 
             commit('setOrderCount', await state.ordersInstance().getCount.call())
-        },
-        async updateStoreValue ({commit, state}, x) {
-            console.log('Sending', x, 'to the Blockchain')
-
-            try {
-                const {logs} = await state.simpleStorageInstance().set(x, {from: state.account})
-
-                const {newValue} = logs.find(e => {
-                    return e.event === "LogStoredDataChanged"
-                }).args
-                commit('setStoredValue', newValue)
-
-                console.log('Events', logs)
-            } catch (e) {
-                console.log("Error!", e)
-            }
         },
         async placeOrder ({commit, state}, order) {
             console.log('Sending order', order, 'into the blockchain')

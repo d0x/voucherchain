@@ -14,10 +14,10 @@
     export default {
         computed: {
             account () {
-                return this.$store.state.account;
+                return this.$store.state.web3.account;
             },
             balance () {
-                return this.$store.state.balance;
+                return this.$store.state.web3.balance;
             }
         }
     }

@@ -33,7 +33,7 @@
         },
         computed: {
             orders () {
-                return this.$store.state.orders
+                return this.$store.state.order.orders
                     .filter(order => !this.onlyAvailable || !order.completed)
             }
         }

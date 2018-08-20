@@ -3,8 +3,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import state from './state'
 import getWeb3 from '../util/getWeb3'
-// import pollWeb3 from '../util/pollWeb3'
-import SimpleStorageArtifact from '../../build/contracts/SimpleStorage.json'
 import OrdersArtifact from '../../build/contracts/Orders.json'
 
 Vue.use(Vuex)
@@ -12,8 +10,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
     strict: true,
     state,
-    getters: {
-    },
+    getters: {},
     mutations: {
         setWeb3 (state, result) {
             console.log('Set Web3 instance')
@@ -24,7 +21,7 @@ export const store = new Vuex.Store({
             state.account = result.account
         },
         setOrderCount (state, value) {
-            console.log('set orderCount to ', value)
+            console.log('set orderCount to ', value.toNumber())
             state.orderCount = value
         },
         setOrders (state, value) {
@@ -91,9 +88,9 @@ export const store = new Vuex.Store({
             commit('setOrderCount', await state.ordersInstance().getCount.call())
         },
         async placeOrder ({commit, state}, order) {
-            console.log('Sending order', order, 'into the blockchain')
+            console.log('Sending order', JSON.stringify(order), 'into the blockchain')
 
-            await state.ordersInstance().insert(order.country, order.zip, order.text, {from: state.account})
+            await state.ordersInstance().insert(order.country, order.zip, order.text, {from: state.account});
         },
         async buyOrder ({commit, state}, orderIndex) {
             console.log('Buy order at index', orderIndex, state.account)

@@ -12,6 +12,10 @@
             <label for="text">Text:</label>
             <input id="text" class="form-control" v-model="order.text" placeholder="Describe your order here."/>
         </div>
+        <div class="form-group">
+            <label for="text">Text:</label>
+            <input id="price" class="form-control" v-model="order.price" placeholder="Price in wei"/>
+        </div>
         <button type="submit" class="btn btn-primary">place Order</button>
     </form>
 </template>
@@ -23,7 +27,8 @@
                 order: {
                     country: 'DE',
                     zip: '60486',
-                    text: ''
+                    text: '',
+                    price: 1000
                 }
             }
         },

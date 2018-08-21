@@ -9,12 +9,13 @@ contract Orders {
         string zip;
         string text;
         bool completed;
+        uint price;
         uint index;
     }
 
     Order[] public orders;
 
-    function insert(string country, string zip, string text)
+    function insert(string country, string zip, string text, uint price)
     public
     returns (uint index)
     {
@@ -25,6 +26,7 @@ contract Orders {
         newOrder.country = country;
         newOrder.zip = zip;
         newOrder.completed = false;
+        newOrder.price = price;
 
         index = orders.push(newOrder) - 1;
         newOrder.index = index;
@@ -32,10 +34,13 @@ contract Orders {
     }
 
     function buy(uint index)
+    payable
     public {
         require(!orders[index].completed, "Order is already completed");
         require(orders[index].exists, "Invalid order index");
+        // todo require enough money
 
+        orders[index].owner.transfer(msg.value);
         orders[index].completed = true;
     }
 
@@ -51,12 +56,12 @@ contract Orders {
     function get(uint index)
     public
     constant
-    returns (address owner, string country, string zip, string text, bool completed){
+    returns (address owner, string country, string zip, string text, bool completed, uint price){
         require(orders[index].exists, "Invalid order index");
 
         Order memory order = orders[index];
 
-        return (order.owner, order.country, order.zip, order.text, order.completed);
+        return (order.owner, order.country, order.zip, order.text, order.completed, order.price);
     }
 
     function getCount()

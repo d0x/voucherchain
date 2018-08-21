@@ -7,7 +7,10 @@
             <h5 class="card-title">{{order.country}}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{order.zip}}</h6>
             <p class="card-text">{{order.text}}</p>
-            <a v-if="!order.completed" href="#" class="card-link" v-on:click.once.prevent="buy">buy</a>
+        </div>
+        <div class="card-footer">
+            {{order.price}}
+            <a v-if="!order.completed" href="#" class="card-link pull-right" v-on:click.once.prevent="buy">buy</a>
         </div>
     </div>
 </template>
@@ -16,7 +19,11 @@
         props: ['order'],
         methods: {
             buy (e) {
-                this.$store.dispatch('buyOrder', this.order.index)
+                this.$store.dispatch('buyOrder',
+                    {
+                        index: this.order.index,
+                        price: this.order.price
+                    })
             }
         }
     }

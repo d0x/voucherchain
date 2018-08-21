@@ -31,6 +31,7 @@ export default {
                             zip: order[2],
                             text: order[3],
                             completed: order[4],
+                            price: order[5],
                             index: i
                         }
                     }
@@ -43,15 +44,16 @@ export default {
 
             commit('setOrderCount', await rootState.web3.ordersInstance().getCount.call())
         },
-        async placeOrder ({commit, state}, order) {
+        async placeOrder ({commit, state, rootState}, order) {
             console.log('Sending order', JSON.stringify(order), 'into the blockchain')
 
-            await state.ordersInstance().insert(order.country, order.zip, order.text, {from: state.account});
+            await rootState.web3.ordersInstance().insert(order.country, order.zip, order.text, order.price, {from: rootState.web3.account});
         },
-        async buyOrder ({commit, state}, orderIndex) {
-            console.log('Buy order at index', orderIndex, state.account)
+        async buyOrder ({commit, state, rootState}, {index, price}) {
+            console.log('Buy order at index', index, 'for', price, state.account)
 
-            await state.ordersInstance().buy(orderIndex, {from: state.account})
+            await rootState.web3.ordersInstance().buy(index,
+                {from: rootState.web3.account, value: web3.toWei(10, 'ether')})
         }
     }
 }

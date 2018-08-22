@@ -1,5 +1,8 @@
 <template>
     <div class="container">
+        <h1>Contrat Information</h1>
+        <ContractInformation/>
+
         <MetaMask/>
 
         <h1>Orders</h1>
@@ -20,9 +23,11 @@
     import MetaMask from "./MetaMask";
     import OrderList from "./OrderList";
     import OrderInput from "./OrderInput";
+    import ContractInformation from "./ContractInformation";
 
     export default {
         components: {
+            ContractInformation,
             OrderInput,
             OrderList,
             MetaMask
@@ -31,6 +36,7 @@
             console.log('Init components')
             await this.$store.dispatch('initWeb3')
             await this.$store.dispatch('fetchOrderCount')
+            await this.$store.dispatch('fetchOwner')
         }
     }
 </script>

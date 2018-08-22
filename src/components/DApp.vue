@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h1>Contrat Information</h1>
+        <h1>Contract Information</h1>
         <ContractInformation/>
 
         <MetaMask/>
@@ -32,11 +32,11 @@
             OrderList,
             MetaMask
         },
-        async beforeCreate() {
+        async beforeCreate () {
             console.log('Init components')
             await this.$store.dispatch('initWeb3')
             await this.$store.dispatch('fetchOrderCount')
-            await this.$store.dispatch('fetchOwner')
+            await this.$store.dispatch('fetchContractInformation')
         }
     }
 </script>

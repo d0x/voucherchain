@@ -1,6 +1,9 @@
 pragma solidity ^0.4.17;
 
-contract Orders {
+import "zeppelin/contracts/ownership/Ownable.sol";
+import "zeppelin/contracts/ownership/Contactable.sol";
+
+contract Orders is Contactable {
 
     struct Order {
         bool exists;
@@ -13,7 +16,11 @@ contract Orders {
         uint index;
     }
 
-    Order[] public orders;
+    Order[] private orders;
+
+    constructor() public {
+        setContactInformation("You can contact me on https://github.com/d0x or https://twitter.com/chrschneider");
+    }
 
     function insert(string country, string zip, string text, uint price)
     public

@@ -5,7 +5,8 @@ export default {
         balance: null,
         orderCount: null,
         orders: [],
-        owner: null
+        owner: null,
+        contactInfo: null
     },
     getters: {},
     mutations: {
@@ -18,13 +19,18 @@ export default {
         },
         setOwner(state, value) {
             state.owner = value
+        },
+        setContactInfo(state, value) {
+            state.contactInfo = value
         }
+
     },
     actions: {
-        async fetchOwner({commit, state, rootState}) {
+        async fetchContractInformation({commit, state, rootState}) {
             console.log('Reading owner from blockchain')
 
-            commit('setOwner', await rootState.web3.ordersInstance().methods.owner().call())
+            commit('setOwner', await rootState.web3.ordersInstance().owner.call())
+            commit('setContactInfo', await rootState.web3.ordersInstance().contactInformation.call())
         },
         async fetchOrderCount({commit, state, rootState}) {
             console.log('Reading orderCount from blockchain')

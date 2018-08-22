@@ -1,12 +1,13 @@
 <template>
     <div>
         <h1>MetaMask</h1>
-
-        <ul>
-            <li>Account: {{account}}</li>
-            <li>Balance: {{balance}}</li>
-        </ul>
-
+        <div class="card">
+            <ul class="list-group">
+                <!-- shows that i'm reading account information from MetaMask -->
+                <li class="list-group-item">Account: {{account}}</li>
+                <li class="list-group-item">Balance: {{balance}}</li>
+            </ul>
+        </div>
     </div>
 </template>
 <script>

@@ -1,4 +1,5 @@
 <template>
+    <!-- shows that i'm writing data to my contract -->
     <form id="newOrder" v-on:submit.prevent="placeOrder()">
         <div class="form-group">
             <label for="country">Country:</label>

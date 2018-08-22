@@ -1,4 +1,5 @@
 <template>
+    <!-- shows that i'm reading data from my contract -->
     <div class="card" style="width: 18rem;" :class="{ 'bg-dark': order.completed}">
         <div class="card-header">
             {{order.owner}}

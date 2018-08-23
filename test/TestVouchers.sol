@@ -21,22 +21,26 @@ contract TestVouchers {
 
     Vouchers vouchers = Vouchers(DeployedAddresses.Vouchers());
 
+    // Shows that the integration with the Ownable form open zeppelin works
     function test_contract_owner_is_set() public {
         address actual = vouchers.owner();
         Assert.isNotZero(actual, "There should be an owner");
     }
 
+    // Shows that the integration with the ContactInformation from open zeppelin works
     function test_contact_information() public {
         string memory actual = vouchers.contactInformation();
         Assert.isNotZero(bytes(actual).length, "There should be some sort of contact information");
     }
 
+    // Shows that I can read data from the chain
     function test_that_example_vouchers_are_present() public {
         // I've put two example vouchers over migrations/2_deploy_contracts.js
         uint actual = vouchers.getCount();
         Assert.equal(actual, examplesAddedDuringMigrations, "Count should be correct");
     }
 
+    // Shows that I can put data in the chain
     function test_insert_voucher() public {
         uint index = vouchers.insert(exampleTitle, exampleDescription, examplePrice);
         Assert.equal(index, examplesAddedDuringMigrations, "It should be on the correct index.");
@@ -70,6 +74,8 @@ contract TestVouchers {
         Assert.equal(price, examplePrice, "Initial Voucher state check");
     }
 
+    // That should show that sending ehter working fine. But because of some
+    // solidity test restriction this isn't possible
     function test_buy_voucher() public {
         // This test doesn't run as long as
         // vouchers[index].owner.transfer(msg.value);

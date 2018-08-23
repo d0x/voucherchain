@@ -14,6 +14,11 @@ contract TestVouchers {
     string exampleDescription = "You'll get a free Burger at the Block Buger Chain House.";
     uint examplePrice = 1 ether;
 
+    // I've added a few vouchers with the 2_deploy_contracts.js.
+    // In case you like to manipulate the examples, you can adjust this
+    // variable so that all the tests will pass.
+    uint examplesAddedDuringMigrations = 3;
+
     Vouchers vouchers = Vouchers(DeployedAddresses.Vouchers());
 
     function test_contract_owner_is_set() public {
@@ -29,22 +34,22 @@ contract TestVouchers {
     function test_that_example_vouchers_are_present() public {
         // I've put two example vouchers over migrations/2_deploy_contracts.js
         uint actual = vouchers.getCount();
-        Assert.equal(actual, 2, "There should be two examples");
+        Assert.equal(actual, examplesAddedDuringMigrations, "Count should be correct");
     }
 
     function test_insert_voucher() public {
         uint index = vouchers.insert(exampleTitle, exampleDescription, examplePrice);
-        Assert.equal(index, 2, "It should be on the correct index.");
+        Assert.equal(index, examplesAddedDuringMigrations, "It should be on the correct index.");
     }
 
     function test_count_after_insert() public {
-        Assert.equal(vouchers.getCount(), 3, "After insert it should be 1 element");
+        Assert.equal(vouchers.getCount(), examplesAddedDuringMigrations + 1, "After insert there should be one more element");
     }
 
     function test_insert_second_voucher() public {
         uint index = vouchers.insert("Block Stone Massage", "Relief your chain with a perfect block stone massage.", 300 finney);
-        Assert.equal(index, 3, "It should be on the third index.");
-        Assert.equal(vouchers.getCount(), 4, "Four Vouchers should be present");
+        Assert.equal(index, examplesAddedDuringMigrations + 1, "It should be on the last index");
+        Assert.equal(vouchers.getCount(), examplesAddedDuringMigrations + 2, "All Vouchers should be present");
     }
 
     function test_voucher_isnt_sold_has_no_buyer_and_correct_data() public {
@@ -54,7 +59,7 @@ contract TestVouchers {
         string memory description,
         bool sold,
         bool revoked,
-        uint price) = vouchers.get(2);
+        uint price) = vouchers.get(examplesAddedDuringMigrations);
 
         Assert.isFalse(sold, "Initial Voucher state check");
         Assert.isFalse(revoked, "Initial Voucher state check");
@@ -88,12 +93,13 @@ contract TestVouchers {
     }
 
     function test_revoke_voucher() public {
-        vouchers.revoke(2);
+        uint index = examplesAddedDuringMigrations + 1;
+        vouchers.revoke(index);
 
         // in case you are using IntelliJ you maye see an error in this line.
         // But it's common syntax and it works fine with "truffle test"
         // See: https://solidity.readthedocs.io/en/develop/control-structures.html?highlight=tuple#destructuring-assignments-and-returning-multiple-values
-        (,,,,, bool revoked,) = vouchers.get(2);
+        (,,,,, bool revoked,) = vouchers.get(index);
 
         Assert.isTrue(revoked, "Should be deleted");
     }

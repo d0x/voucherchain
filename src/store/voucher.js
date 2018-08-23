@@ -17,11 +17,21 @@ export default {
         setVouchers (state, value) {
             state.vouchers = value
         },
+        addVoucher (state, value) {
+            state.vouchers.push(value)
+            state.voucherCount++
+        },
         setOwner (state, value) {
             state.owner = value
         },
         setContactInfo (state, value) {
             state.contactInfo = value
+        },
+        setSold (state, index) {
+            state.vouchers[index].sold = true
+        },
+        setRevoked (state, index) {
+            state.vouchers[index].revoked = true
         }
     },
     actions: {
@@ -61,18 +71,36 @@ export default {
         },
         async placeVoucher ({commit, state, rootState}, voucher) {
             console.log('Sending voucher', JSON.stringify(voucher), 'into the blockchain')
-            await rootState.web3.vouchersInstance().insert(voucher.title, voucher.description, web3.toWei(1), {from: rootState.web3.account});
+            const result = await rootState.web3.vouchersInstance().insert(voucher.title, voucher.description, web3.toWei(voucher.priceInEther), {from: rootState.web3.account});
+
+            const event = result.logs.find(res => res.event === "Inserted")
+            commit('addVoucher', {
+                sold: event.args.sold,
+                revoked: event.args.revoked,
+                owner: event.args.owner,
+                title: event.args.title,
+                description: event.args.description,
+                buyer: event.args.buyer,
+                price: event.args.price,
+                index: event.args.index.toNumber(),
+            })
         },
         async buyVoucher ({commit, state, rootState}, {index, price: priceInWei}) {
             console.log('Buy voucher at index', index, 'for', priceInWei, "wei with account:", state.account)
 
-            await rootState.web3.vouchersInstance().buy(index,
-                {from: rootState.web3.account, value: priceInWei})
+            const result = await rootState.web3.vouchersInstance().buy(index, {
+                from: rootState.web3.account,
+                value: priceInWei
+            })
+            const event = result.logs.find(res => res.event === "Sold")
+            commit('setSold', event.args.index.toNumber())
         },
         async revokeVoucher ({commit, state, rootState}, index) {
             console.log('Revoke voucher at index', index, "wei with account:", state.account)
 
-            await rootState.web3.vouchersInstance().revoke(index, {from: rootState.web3.account})
+            const result = await rootState.web3.vouchersInstance().revoke(index, {from: rootState.web3.account})
+            const event = result.logs.find(res => res.event === "Revoked")
+            commit('setRevoked', event.args.index.toNumber())
         }
 
     }

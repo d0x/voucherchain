@@ -14,9 +14,15 @@
         <div class="card-footer">
             <div class="container">
                 <div class="row">
-                    <div class="col-sm" v-if="voucher.sold || voucher.revoked"></div>
-                    <a class="col-sm" href="#" v-if="revokeable" v-on:click.once.prevent="revoke"> revoke </a>
-                    <a class="col-sm" href="#" v-if="available && !soldByMe" v-on:click.once.prevent="buy"> buy </a>
+                    <div class="col-sm" v-if="boughtByMe">
+                        <h5><span class="badge badge-pill badge-success">IT'S YOURS!</span></h5>
+                    </div>
+                    <a class="col-sm" href="#" v-else-if="revokeable" v-on:click.once.prevent="revoke"> revoke </a>
+                    <a class="col-sm" href="#" v-else-if="available && !soldByMe" v-on:click.once.prevent="buy">buy</a>
+                    <div class="col-sm" v-else>
+                        <!-- dummy div to have two columns even if the elements above are hidden -->
+                    </div>
+
                     <div class="col-sm-push">{{ price }} Ether</div>
                 </div>
             </div>
@@ -41,6 +47,9 @@
             },
             hasBuyer () {
                 return this.voucher.buyer !== "0x0000000000000000000000000000000000000000"
+            },
+            boughtByMe () {
+                return this.voucher.buyer === this.$store.state.web3.account
             }
         },
         methods: {

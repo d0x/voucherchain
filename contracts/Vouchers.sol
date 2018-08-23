@@ -5,6 +5,10 @@ import "zeppelin/contracts/ownership/Contactable.sol";
 
 contract Vouchers is Contactable {
 
+    event Inserted(address owner, address buyer, string title, string description, bool sold, bool revoked, uint price, uint index);
+    event Sold(uint index);
+    event Revoked(uint index);
+
     struct Voucher {
         // is this voucher sold already?
         bool sold;
@@ -56,7 +60,8 @@ contract Vouchers is Contactable {
 
         index = vouchers.push(newVoucher) - 1;
         newVoucher.index = index;
-        return index;
+
+        emit Inserted(newVoucher.owner, newVoucher.buyer, newVoucher.title, newVoucher.description, newVoucher.sold, newVoucher.revoked, newVoucher.price, newVoucher.index);
     }
 
     function get(uint index)
@@ -80,6 +85,7 @@ contract Vouchers is Contactable {
         vouchers[index].owner.transfer(msg.value);
         vouchers[index].sold = true;
         vouchers[index].buyer = msg.sender;
+        emit Sold(index);
     }
 
     function revoke(uint index)
@@ -89,5 +95,6 @@ contract Vouchers is Contactable {
         require(vouchers[index].owner == msg.sender, "Only voucher owner can revoke vouchers");
 
         vouchers[index].revoked = true;
+        emit Revoked(index);
     }
 }

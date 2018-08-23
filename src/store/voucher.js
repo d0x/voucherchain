@@ -27,7 +27,8 @@ export default {
         setContactInfo (state, value) {
             state.contactInfo = value
         },
-        setSold (state, index) {
+        setSold (state, {index, buyer}) {
+            state.vouchers[index].buyer = buyer
             state.vouchers[index].sold = true
         },
         setRevoked (state, index) {
@@ -93,7 +94,7 @@ export default {
                 value: priceInWei
             })
             const event = result.logs.find(res => res.event === "Sold")
-            commit('setSold', event.args.index.toNumber())
+            commit('setSold', {index: event.args.index.toNumber(), buyer: rootState.web3.account})
         },
         async revokeVoucher ({commit, state, rootState}, index) {
             console.log('Revoke voucher at index', index, "wei with account:", state.account)

@@ -1,20 +1,14 @@
 <template>
     <div class="container">
+        <h1>Voucher DApp</h1>
+        <p>Buy and sell custom vouchers.</p>
         <div class="card-deck">
             <ContractInformation/>
             <MetaMask/>
+            <VoucherInput/>
         </div>
 
         <VoucherList/>
-
-        <div class="card">
-            <div class="card-header">
-                Place Voucher
-            </div>
-            <div class="card-body">
-                <VoucherInput/>
-            </div>
-        </div>
     </div>
 </template>
 

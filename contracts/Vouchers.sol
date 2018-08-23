@@ -53,7 +53,6 @@ contract Vouchers is Contactable {
         newVoucher.sold = false;
         newVoucher.revoked = false;
         newVoucher.owner = msg.sender;
-        //        newVoucher.exists = true;
         newVoucher.title = title;
         newVoucher.description = description;
         newVoucher.price = price;

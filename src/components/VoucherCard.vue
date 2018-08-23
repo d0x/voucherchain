@@ -8,6 +8,7 @@
         </div>
         <div class="card-body">
             <p class="card-text">{{voucher.description}}</p>
+            <div class="owner abbreviate" v-if="hasBuyer">Buyer {{voucher.buyer}}</div>
             <div class="owner abbreviate">Owner: {{voucher.owner}}</div>
         </div>
         <div class="card-footer">
@@ -37,6 +38,9 @@
             },
             revokeable () {
                 return this.soldByMe && this.available
+            },
+            hasBuyer () {
+                return this.voucher.buyer !== "0x0000000000000000000000000000000000000000"
             }
         },
         methods: {

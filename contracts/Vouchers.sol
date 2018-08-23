@@ -6,9 +6,6 @@ import "zeppelin/contracts/ownership/Contactable.sol";
 contract Vouchers is Contactable {
 
     struct Voucher {
-        //         this marker is used
-        //        bool exists;
-
         // is this voucher sold already?
         bool sold;
 
@@ -93,5 +90,4 @@ contract Vouchers is Contactable {
 
         vouchers[index].revoked = true;
     }
-
 }

@@ -1,12 +1,12 @@
 import getWeb3 from "../util/getWeb3";
-import OrdersArtifact from '../../build/contracts/Orders.json'
+import VouchersArtifact from '../../build/contracts/Vouchers.json'
 
 export default {
     strict: true,
     state: {
         web3: null,
         web3Provider: null,
-        ordersInstance: null,
+        vouchersInstance: null,
         account: null,
         balance: null
     },
@@ -16,7 +16,7 @@ export default {
             console.log('Set Web3 instance', result)
             state.web3 = result.web3
             state.web3Provider = result.web3Provider
-            state.ordersInstance = result.ordersInstance
+            state.vouchersInstance = result.vouchersInstance
             state.balance = result.balance
             state.account = result.account
         },
@@ -33,9 +33,9 @@ export default {
 
             const TruffleContract = require('truffle-contract')
 
-            const Orders = TruffleContract(OrdersArtifact)
-            Orders.setProvider(web3Provider)
-            let ordersInstance = await Orders.deployed()
+            const Vouchers = TruffleContract(VouchersArtifact)
+            Vouchers.setProvider(web3Provider)
+            let vouchersInstance = await Vouchers.deployed()
 
             const account = (await web3.eth.getAccountsPromise())[0]
             const balance = await web3.eth.getBalancePromise(account)
@@ -49,7 +49,7 @@ export default {
             commit('setWeb3', {
                 web3: () => web3,
                 web3Provider: () => web3Provider,
-                ordersInstance: () => ordersInstance,
+                vouchersInstance: () => vouchersInstance,
                 account: account,
                 balance: balance
             })

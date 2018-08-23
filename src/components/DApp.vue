@@ -5,15 +5,15 @@
 
         <MetaMask/>
 
-        <h1>Orders</h1>
-        <OrderList/>
+        <h1>Vouchers</h1>
+        <VoucherList/>
 
         <div class="card">
             <div class="card-header">
-                Place Order
+                Place Voucher
             </div>
             <div class="card-body">
-                <OrderInput/>
+                <VoucherInput/>
             </div>
         </div>
     </div>
@@ -21,21 +21,21 @@
 
 <script>
     import MetaMask from "./MetaMask";
-    import OrderList from "./OrderList";
-    import OrderInput from "./OrderInput";
+    import VoucherList from "./VoucherList";
+    import VoucherInput from "./VoucherInput";
     import ContractInformation from "./ContractInformation";
 
     export default {
         components: {
             ContractInformation,
-            OrderInput,
-            OrderList,
+            VoucherInput,
+            VoucherList,
             MetaMask
         },
         async beforeCreate () {
             console.log('Init components')
             await this.$store.dispatch('initWeb3')
-            await this.$store.dispatch('fetchOrderCount')
+            await this.$store.dispatch('fetchVoucherCount')
             await this.$store.dispatch('fetchContractInformation')
         }
     }

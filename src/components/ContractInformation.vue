@@ -10,10 +10,10 @@
     export default {
         computed: {
             owner () {
-                return this.$store.state.order.owner
+                return this.$store.state.voucher.owner
             },
             contactInfo () {
-                return this.$store.state.order.contactInfo
+                return this.$store.state.voucher.contactInfo
             }
 
         }

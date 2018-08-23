@@ -8,17 +8,16 @@
         </div>
 
         <div class="card-columns">
-            <orderCard v-for="order in orders" :key="order.index" :order="order"/>
+            <voucherCard v-for="voucher in vouchers" :key="voucher.index" :voucher="voucher"/>
         </div>
     </div>
 </template>
 <script>
-    import OrderCard from '@/components/OrderCard'
-    import OrderInput from '@/components/OrderInput'
+    import VoucherCard from '@/components/VoucherCard'
 
     export default {
         components: {
-            'orderCard': OrderCard
+            'voucherCard': VoucherCard
         },
         data: function () {
             return {
@@ -26,9 +25,9 @@
             }
         },
         computed: {
-            orders () {
-                return this.$store.state.order.orders
-                    .filter(order => !this.onlyAvailable || !order.completed)
+            vouchers () {
+                return this.$store.state.voucher.vouchers
+                    .filter(voucher => !this.onlyAvailable || !voucher.completed)
             }
         }
     }

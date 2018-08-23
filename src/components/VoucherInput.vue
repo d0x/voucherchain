@@ -2,39 +2,45 @@
     <!-- shows that i'm writing data to my contract -->
     <form id="newVoucher" v-on:submit.prevent="placeVoucher()">
         <div class="form-group">
-            <label for="country">Country:</label>
-            <input id="country" class="form-control" v-model="voucher.country"/>
+            <label for="title">Title:</label>
+            <input id="title" class="form-control" v-model="voucher.title" placeholder="Headline for your voucher."
+                   required/>
         </div>
         <div class="form-group">
-            <label for="zip">ZIP:</label>
-            <input id="zip" class="form-control" v-model="voucher.zip"/>
+            <label for="description">Description:</label>
+            <input id="description" class="form-control" v-model="voucher.description"
+                   placeholder="Describe your voucher here."/>
         </div>
         <div class="form-group">
-            <label for="text">Text:</label>
-            <input id="text" class="form-control" v-model="voucher.text" placeholder="Describe your voucher here."/>
+            <label for="priceInEther">Price:</label>
+            <div class="input-group-prepend">
+                <span class="input-group-text">Ether</span>
+                <input id="priceInEther" class="form-control" v-model="voucher.priceInEther"
+                       placeholder="Voucher price in Ether. Something like 0.5"
+                       required/>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="text">Price in ETH:</label>
-            <input id="price" class="form-control" v-model="voucher.price" placeholder="Price in wei"/>
-        </div>
+
         <button type="submit" class="btn btn-primary">place Voucher</button>
     </form>
 </template>
 <script>
     export default {
-        data: function () {
-            return {
+        data: () => (
+            {
                 voucher: {
-                    country: 'DE',
-                    zip: '60486',
-                    text: '',
-                    price: 1000
+                    title: '',
+                    description: '',
+                    priceInEther: null
                 }
-            }
-        },
+            }),
         methods: {
             async placeVoucher () {
-                await this.$store.dispatch('placeVoucher', this.$data.voucher)
+                if (/^[0-9]+$/.test(this.voucher.priceInEther))
+                    await this.$store.dispatch('placeVoucher', this.voucher)
+                else {
+                    alert("Should be a positive number like 0.5.")
+                }
             }
         }
     }

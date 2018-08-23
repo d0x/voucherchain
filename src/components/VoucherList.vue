@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="onlyAvailable" v-model="onlyAvailable">
-            <label class="form-check-label" for="onlyAvailable">
-                Only available
-            </label>
+        <h3>Vouchers</h3>
+        <div>
+            <label class="form-check-label" for="onlyAvailable">Options:</label>
+            <a id="onlyAvailable" href="#" class="btn btn-primary"
+               v-on:click="toggleFilter">{{buttonText}}
+            </a>
         </div>
-
         <div class="card-columns">
             <voucherCard v-for="voucher in vouchers" :key="voucher.index" :voucher="voucher"/>
         </div>
@@ -19,17 +19,25 @@
         components: {
             'voucherCard': VoucherCard
         },
-        data: function () {
-            return {
+        data: () => (
+            {
                 onlyAvailable: false
             }
-        },
+        ),
         computed: {
             vouchers () {
                 return this.$store.state.voucher.vouchers
-                    .filter(voucher => !this.onlyAvailable || !voucher.completed)
+                    .filter(voucher => !this.onlyAvailable || (!voucher.sold && !voucher.revoked))
+            },
+            buttonText () {
+                return this.onlyAvailable ? "show all" : "only available";
             }
-        }
+        },
+        methods: {
+            toggleFilter () {
+                this.onlyAvailable = !this.onlyAvailable
+            }
+        },
     }
 </script>
 <style scoped></style>

@@ -1,11 +1,10 @@
 <template>
     <div class="container">
-        <h1>Contract Information</h1>
-        <ContractInformation/>
+        <div class="card-deck">
+            <ContractInformation/>
+            <MetaMask/>
+        </div>
 
-        <MetaMask/>
-
-        <h1>Vouchers</h1>
         <VoucherList/>
 
         <div class="card">

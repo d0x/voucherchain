@@ -1,6 +1,6 @@
 # Voucherchain
 
-> My contribution for the final project of the Consensys Developer Program 2018.
+> My contribution for the final project of the [Consensys Developer Program 2018](https://consensys.net/academy/2018developer/).
 
 ## Local development setup
 
@@ -44,7 +44,7 @@ This dapp can do the following things:
 * As User, I want to see some Contact Information comming from the blockchain. (Demonstrates OpenZeppelin EthPM usage)
 * As Course Student Auditor, I want to have 3 example vourchers, so something is visible from the beginning.
 
-A few things to try or see:
+A few things to note:
 * Wether you see "revoke" or "buy" buttons in the vourcher-footers dependes on the account you are using.
   * You can only revoke your vouchers.
   * You can only buy other vouchers.

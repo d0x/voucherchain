@@ -50,16 +50,9 @@ export default {
             let allVouchers = Array.from(Array(count).keys())
                 .map(async (i) => {
                         let voucher = await rootState.web3.vouchersInstance().get.call(i);
-                        return {
-                            owner: voucher[0],
-                            buyer: voucher[1],
-                            title: voucher[2],
-                            description: voucher[3],
-                            sold: voucher[4],
-                            revoked: voucher[5],
-                            price: voucher[6],
-                            index: i
-                        }
+                        let [owner, buyer, title, description, sold, revoked, price]
+                            = await rootState.web3.vouchersInstance().get.call(i);
+                        return {owner, buyer, title, description, sold, revoked, price, index: i}
                     }
                 );
 

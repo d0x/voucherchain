@@ -32,12 +32,22 @@ contract Vouchers is Contactable {
         uint index;
     }
 
-    Voucher[] private vouchers;
+    Voucher[] public vouchers;
+
+    bool public stopped = false;
+
+    modifier stopInEmergency {require(!stopped);
+        _;}
+
+    modifier voucherExists(uint index) {require(vouchers[index].owner != 0, "A voucher with this index doesn't exist");
+        _;}
 
     constructor() public {
+        // Sets the contact information provided by OpenZeppelin and imported with EthPM
         setContactInformation("You can contact me on https://github.com/d0x or https://twitter.com/chrschneider");
     }
 
+    // get the current count of vouchers. This is used to fetch different vouchers.
     function getCount()
     public
     constant
@@ -46,7 +56,9 @@ contract Vouchers is Contactable {
         return vouchers.length;
     }
 
+    // inserts a new voucher at.
     function insert(string title, string description, uint price)
+    stopInEmergency
     public
     returns (uint index)
     {
@@ -64,21 +76,22 @@ contract Vouchers is Contactable {
         emit Inserted(newVoucher.owner, newVoucher.buyer, newVoucher.title, newVoucher.description, newVoucher.sold, newVoucher.revoked, newVoucher.price, newVoucher.index);
     }
 
+    // get a voucher at the given index.
     function get(uint index)
+    voucherExists(index)
     public
     constant
     returns (address owner, address buyer, string title, string description, bool sold, bool revoked, uint price){
-        require(vouchers[index].owner != 0, "Invalid voucher index");
-
         Voucher memory voucher = vouchers[index];
-
         return (voucher.owner, voucher.buyer, voucher.title, voucher.description, voucher.sold, voucher.revoked, voucher.price);
     }
 
+    // buy an available voucher at the given index.
     function buy(uint index)
+    stopInEmergency
+    voucherExists(index)
     payable
     public {
-        require(vouchers[index].owner != 0, "Invalid voucher index");
         require(!vouchers[index].sold, "Voucher is already sold");
         require(msg.value == vouchers[index].price, "Invalid amount of wei");
 
@@ -88,7 +101,10 @@ contract Vouchers is Contactable {
         emit Sold(index);
     }
 
+    // mark a voucher as "revoked" so that i can't be bought anymore.
     function revoke(uint index)
+    stopInEmergency
+    voucherExists(index)
     public {
         require(!vouchers[index].sold, "You can't revoke sold vouchers");
         require(vouchers[index].owner != 0, "Invalid voucher index");
@@ -96,5 +112,26 @@ contract Vouchers is Contactable {
 
         vouchers[index].revoked = true;
         emit Revoked(index);
+    }
+
+    // Circuit Breaker: After calling this, only a subset of functions can be executed
+    function emergencyStop()
+    onlyOwner
+    public {
+        stopped = true;
+    }
+
+    // Circuit Breaker: After calling this, everything can be exectued again.
+    function emergencyStopEnd()
+    onlyOwner
+    public {
+        stopped = false;
+    }
+
+    // Mortal Contract: Remove the contract and payout everything (which should be nothing) to the owner.
+    function kill()
+    onlyOwner
+    public {
+        selfdestruct(owner);
     }
 }

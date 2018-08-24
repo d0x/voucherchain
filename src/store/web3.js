@@ -31,28 +31,30 @@ export default {
 
             const {web3, web3Provider} = await getWeb3()
 
-            const TruffleContract = require('truffle-contract')
+            if (web3 && web3Provider) {
+                const TruffleContract = require('truffle-contract')
 
-            const Vouchers = TruffleContract(VouchersArtifact)
-            Vouchers.setProvider(web3Provider)
-            let vouchersInstance = await Vouchers.deployed()
+                const Vouchers = TruffleContract(VouchersArtifact)
+                Vouchers.setProvider(web3Provider)
+                let vouchersInstance = await Vouchers.deployed()
 
-            const account = (await web3.eth.getAccountsPromise())[0]
-            const balance = await web3.eth.getBalancePromise(account)
-
-            web3Provider.publicConfigStore.on('update', async e => {
-                const account = e.selectedAddress
+                const account = (await web3.eth.getAccountsPromise())[0]
                 const balance = await web3.eth.getBalancePromise(account)
-                commit('setAccount', {account, balance})
-            });
 
-            commit('setWeb3', {
-                web3: () => web3,
-                web3Provider: () => web3Provider,
-                vouchersInstance: () => vouchersInstance,
-                account: account,
-                balance: balance
-            })
+                web3Provider.publicConfigStore.on('update', async e => {
+                    const account = e.selectedAddress
+                    const balance = await web3.eth.getBalancePromise(account)
+                    commit('setAccount', {account, balance})
+                });
+
+                commit('setWeb3', {
+                    web3: () => web3,
+                    web3Provider: () => web3Provider,
+                    vouchersInstance: () => vouchersInstance,
+                    account: account,
+                    balance: balance
+                })
+            }
         }
     }
 }

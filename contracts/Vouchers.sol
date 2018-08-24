@@ -95,9 +95,9 @@ contract Vouchers is Contactable {
         require(!vouchers[index].sold, "Voucher is already sold");
         require(msg.value == vouchers[index].price, "Invalid amount of wei");
 
-        vouchers[index].owner.transfer(msg.value);
         vouchers[index].sold = true;
         vouchers[index].buyer = msg.sender;
+        vouchers[index].owner.transfer(msg.value);
         emit Sold(index);
     }
 
